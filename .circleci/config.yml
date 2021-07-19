@@ -50,6 +50,9 @@ _refs:
   test: &test
     name: Run tests
     command: yarn test
+  docs: &docs
+    name: Generate docs
+    command: shx rm -rf ./docs && yarn typedoc
   gus-prepare-environment-variables: &gus-prepare-environment-variables
     name: 'Prepare environment variables for GUS Change Case Management'
     command: |
@@ -80,6 +83,7 @@ jobs:
       - run: *lint
       - run: *build
       - run: *test
+      - run: *docs
       - store_test_results:
           path: test-results
       - build-artifact
