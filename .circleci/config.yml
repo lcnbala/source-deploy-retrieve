@@ -74,6 +74,7 @@ jobs:
       - image: node:latest
     steps:
       - checkout
+      - run: *install      
       - run:
           name: Generate docs
           command: rm -rf ./docs && yarn typedoc
