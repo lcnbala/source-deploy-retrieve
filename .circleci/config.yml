@@ -50,9 +50,6 @@ _refs:
   test: &test
     name: Run tests
     command: yarn test
-  docs: &docs
-    name: Generate docs
-    command: rm -rf ./docs && yarn typedoc
   gus-prepare-environment-variables: &gus-prepare-environment-variables
     name: 'Prepare environment variables for GUS Change Case Management'
     command: |
@@ -72,6 +69,24 @@ commands:
           path: ./artifact
 
 jobs:
+  docs-build: &docs-build
+    docker:
+      - image: node:latest
+    steps:
+      - checkout
+      - run:
+          name: Generate docs
+          command: rm -rf ./docs && yarn typedoc
+      - persist_to_workspace:
+          root: docs/
+          paths:
+            - assets/*
+            - classes/*
+            - enums/*
+            - interfaces/*
+            - index.html
+            - modules.html
+
   node-latest: &node-test
     docker:
       - image: node:latest
@@ -83,7 +98,6 @@ jobs:
       - run: *lint
       - run: *build
       - run: *test
-      - run: *docs
       - store_test_results:
           path: test-results
       - build-artifact
@@ -203,6 +217,7 @@ workflows:
             branches:
               ignore: /.*/
       - run-win-tests
+      - docs-build
 
   publish-workflow:
       when: << pipeline.parameters.publish >>
